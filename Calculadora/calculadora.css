@@ -1,0 +1,15 @@
+body{
+    background-color: #282828;
+}
+h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 50px;
+}
+button{
+    display: block;
+    margin: 0 auto;
+    font-size: 15px;
+}

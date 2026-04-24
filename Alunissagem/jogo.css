@@ -1,0 +1,8 @@
+*{
+    background-color:   #000114;
+}
+div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
