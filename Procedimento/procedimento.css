@@ -1,0 +1,10 @@
+body{
+    background-color: #282828;
+}
+h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 40px;
+}
