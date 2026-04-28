@@ -1,5 +1,4 @@
 // Jogo da Alunissagem
-// xandeelias
 // 08/04/2026
 // versão 0.1.0
 
@@ -25,17 +24,24 @@ const velocidadeAnimacao = 6;
 let jogoIniciado = false;
 let telaFinalAtiva = false;
 let instruções = false;
-//Músicas
+//Músicas e Sons
 let musica1 = new Audio("MúsicaDeFundo.mp3");
 musica1.loop = true;
-musica1.volume = 0.7;
+musica1.volume = 0.8;
+let musica2 = new Audio("MúsicaDeResultado.mp3");
+musica2.loop = true;
+musica2.volume = 0.3;
 let somMotor = new Audio("somMotorFoguete.wav");
 somMotor.loop = true;
 somMotor.volume = 1;
-// Planetas
-let planeta = new Image();
-planeta.src = "sPlanetaTerra.png"
-// Funções do Jogo
+// Coisas do Espaço
+let terra = new Image();
+terra.src = "sTerra.png"
+let lua = new Image();
+lua.src = "sLua.png"
+const zonaLuaX1 = 200;
+const zonaLuaX2 = 750;
+//
 let lançamento = (Math.round(Math.random()) == 0);
 const gravidade = 0.01;
 let estrelas = [];
@@ -55,8 +61,8 @@ let modulolunar = {
         y: 160
     },
     ângulo: lançamento ? -Math.PI/2 : Math.PI/2,
-    largura: 164,
-    altura: 164,
+    largura: 128,
+    altura: 128,
     cor: "lightgray",
     velocidade:{
         x: lançamento ? 2 : -2,
@@ -82,7 +88,6 @@ function mostrarIndicador(mensagem, x, y){
 function mostrarResultado(mensagem, cor){
     contexto.font = "23px 'Press Start 2P'";
     contexto.textAlign = "center";
-    contexto.textBaseline = "middle";
     contexto.fillStyle = cor;
     contexto.fillText(mensagem, canvas.width * 0.5, canvas.height * 0.4);
 }
@@ -109,7 +114,7 @@ function mostrarAltitude(){
 }
 function mostrarAngulo(){
     mostrarIndicador(
-        `Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)} °`,
+        `Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`,
         50,
         60
     );
@@ -124,6 +129,9 @@ function atraçãoGravitacional(){
     modulolunar.posicao.x += modulolunar.velocidade.x;
     modulolunar.posicao.y += modulolunar.velocidade.y;
     modulolunar.velocidade.y += gravidade;
+
+    if(Math.abs(modulolunar.velocidade.x) < 0.01) modulolunar.velocidade.x = 0;
+    if(Math.abs(modulolunar.velocidade.y) < 0.01) modulolunar.velocidade.y = 0;
 
     if(modulolunar.rotaçãoHorario){
         modulolunar.ângulo += Math.PI/180;
@@ -162,6 +170,7 @@ function desenhar(){
     atraçãoGravitacional();
     desenharEstrelas();
     desenharPlaneta();
+    desenharLua();
     desenharModuloLunar();
     mostrarCombustível();
     mostrarVelocidade();
@@ -181,7 +190,7 @@ function desenharModuloLunar(){
     contexto.drawImage(
         foguete,
         modulolunar.largura * -0.5,
-        modulolunar.altura * -0.5,
+        modulolunar.altura * -0.7,
         modulolunar.largura,
         modulolunar.altura
     )
@@ -204,7 +213,7 @@ function desenharChama(){
     contexto.drawImage(
         framesChama[frameAtual],
         modulolunar.largura * -0.5,
-        modulolunar.altura * 0.05,
+        modulolunar.altura * -0.15,
         modulolunar.largura,
         modulolunar.altura
     );
@@ -236,13 +245,23 @@ function desenharEstrelas(){
     contexto.restore();
 }
 function desenharPlaneta(){
-    contexto.imageSmoothingEnabled = true;
+    contexto.imageSmoothingEnabled = false;
     contexto.drawImage(
-        planeta,
+        terra,
         canvas.width - 240,
         -25,
         256,
         256
+    );
+}
+function desenharLua(){
+    contexto.imageSmoothingEnabled = false;
+    contexto.drawImage(
+        lua,
+        canvas.width - 1000,
+        225,
+        1024,
+        1024
     );
 }
 function desenharInstruções(){
@@ -295,21 +314,21 @@ function mostrarTelaInicial(){
     desenharEstrelas();
     contexto.imageSmoothingEnabled = false;
     contexto.drawImage(
-        planeta,
+        terra,
         canvas.width - 1560,
         -270,
         1250,
         1250
     );
-    contexto.font = "32px 'Press Start 2P'";
+    contexto.font = "33px 'Press Start 2P'";
     contexto.textAlign = "center";
     contexto.textBaseline = "middle";
     contexto.fillStyle = "white";
     contexto.fillText("ALUNISSAGEM", canvas.width * 0.78, canvas.height * 0.54);
-    if (Math.floor(Date.now() / 500) % 2 === 0) {
+    if (Math.floor(Date.now() / 700) % 2 === 0) {
         contexto.font = "12px 'Press Start 2P'";
         contexto.textAlign = "middle"
-        contexto.fillStyle = "#c4c4c4";
+        contexto.fillStyle = "#f3e0ff";
         contexto.fillText("Pressione ENTER para Iniciar o Jogo", canvas.width * 0.745, canvas.height * 0.6);
     }
     if(instruções){
@@ -325,49 +344,72 @@ function iniciarJogo(evento){
         musica1.play();
     }
 }
-function telaFinal(sucesso){
-    if(!telaFinalAtiva) return;
-    desenharEstrelas();
-    if(sucesso){
-        mostrarResultado("A sua Alunissagem foi Feita com Sucesso!", "green");
-    } else {
-        mostrarResultado("Você Espatifou a Nave na Lua!", "red");
-    }
-    contexto.font = "13px 'Press Start 2P'";
-    contexto.textAlign = "center";
-    contexto.textBaseline = "middle";
-    contexto.fillStyle = "white"; 
-    contexto.fillText(`Velocidade V: ${(modulolunar.velocidade.y * 10).toFixed(2)} m/s H: ${(modulolunar.velocidade.x * 10).toFixed(2)}) m/s}`, 
-    canvas.width * 0.5, canvas.height * 0.5)
-    contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)} °`, canvas.width * 0.5, canvas.height * 0.53);
-    contexto.fillText(`Combustível restante: ${(modulolunar.combustível * 0.1).toFixed(0)} %`, canvas.width * 0.5, canvas.height * 0.56);
-    if (Math.floor(Date.now() / 1000) % 2 === 0) {
-        contexto.font = "13px 'Press Start 2P'";
-        contexto.textAlign = "center";
-        contexto.textBaseline = "middle";
-        contexto.fillStyle = "white";
-        contexto.fillText("Pressione ENTER para Jogar Novamente", canvas.width * 0.5, canvas.height * 0.65);
-    }
-    if (Math.floor(Date.now() / 1000) % 2 === 1) {
-        contexto.font = "13px 'Press Start 2P'";
-        contexto.textAlign = "center";
-        contexto.textBaseline = "middle";
-        contexto.fillStyle = "white";
-        contexto.fillText("Pressione BACKSPACE para Voltar ao Início", canvas.width * 0.5, canvas.height * 0.65);
-    }
-    requestAnimationFrame(() => telaFinal(sucesso));
-}
 function encerrarJogo(){
-    if(modulolunar.posicao.y > canvas.height - modulolunar.altura * 0.5){
-        let sucesso = modulolunar.velocidade.y <= 0.5 && 
-            Math.abs(modulolunar.velocidade.x) <= 0.5 && 
-            Math.abs(modulolunar.ângulo) <= 5;
+    let naLua = modulolunar.posicao.x >= zonaLuaX1 && 
+                modulolunar.posicao.x <= zonaLuaX2;
+    if(modulolunar.posicao.y > canvas.height - modulolunar.altura * 1.2 - modulolunar.largura * -0.9){
+        if(naLua){
+            let sucesso = modulolunar.velocidade.y <= 0.5 && 
+                Math.abs(modulolunar.velocidade.x) <= 0.5 && 
+                Math.abs(modulolunar.ângulo) <= 5;
+            somMotor.pause();
+            somMotor.currentTime = 0;
+            document.removeEventListener("keydown", teclaPressionada);
+            document.removeEventListener("keyup", teclaSolta);
+            document.addEventListener("keydown", function reiniciar(evento){
+                if(evento.key == "Enter"){
+                    document.removeEventListener("keydown", reiniciar);
+                    telaFinalAtiva = false;
+                    lançamento = (Math.round(Math.random()) == 0);
+                    modulolunar.posicao.x = lançamento ? 100 : 700;
+                    modulolunar.posicao.y = 160;
+                    modulolunar.ângulo = lançamento ? -Math.PI/2 : Math.PI/2;
+                    modulolunar.velocidade.x = lançamento ? 2 : -2;
+                    modulolunar.velocidade.y = 0;
+                    modulolunar.motorLigado = false;
+                    modulolunar.combustível = 1000;
+                    modulolunar.rotaçãoHorario = false;
+                    modulolunar.rotaçãoAntihorario = false;
+                    document.addEventListener("keydown", teclaPressionada);
+                    document.addEventListener("keyup", teclaSolta);
+                    desenhar();
+                    musica1.play();
+                    musica2.pause();
+                    musica2.currentTime = 0;
+                } else if(evento.key == "Backspace"){
+                    document.removeEventListener("keydown", reiniciar);
+                    telaFinalAtiva = false;
+                    lançamento = (Math.round(Math.random()) == 0);
+                    modulolunar.posicao.x = lançamento ? 100 : 700;
+                    modulolunar.posicao.y = 160;
+                    modulolunar.ângulo = lançamento ? -Math.PI/2 : Math.PI/2;
+                    modulolunar.velocidade.x = lançamento ? 2 : -2;
+                    modulolunar.velocidade.y = 0;
+                    modulolunar.motorLigado = false;
+                    modulolunar.combustível = 1000;
+                    modulolunar.rotaçãoHorario = false;
+                    jogoIniciado = false;
+                    document.addEventListener("keydown", iniciarJogo);
+                    mostrarTelaInicial();
+                    musica1.play();
+                    musica2.pause();
+                    musica2.currentTime = 0;
+                }
+            });
+            telaFinalAtiva = true;
+            musica1.pause();
+            musica1.currentTime = 0;
+            setTimeout(() => { musica2.play(); telaFinal(sucesso); }, 950);
+            return true;
+        }
+    }
+    //Chão
+    if(modulolunar.posicao.y > canvas.height + 100){
         somMotor.pause();
         somMotor.currentTime = 0;
         document.removeEventListener("keydown", teclaPressionada);
         document.removeEventListener("keyup", teclaSolta);
-        document.addEventListener("keydown", 
-        function reiniciar(evento){
+        document.addEventListener("keydown", function reiniciar(evento){
             if(evento.key == "Enter"){
                 document.removeEventListener("keydown", reiniciar);
                 telaFinalAtiva = false;
@@ -384,6 +426,9 @@ function encerrarJogo(){
                 document.addEventListener("keydown", teclaPressionada);
                 document.addEventListener("keyup", teclaSolta);
                 desenhar();
+                musica1.play();
+                musica2.pause();
+                musica2.currentTime = 0;
             } else if(evento.key == "Backspace"){
                 document.removeEventListener("keydown", reiniciar);
                 telaFinalAtiva = false;
@@ -399,13 +444,128 @@ function encerrarJogo(){
                 jogoIniciado = false;
                 document.addEventListener("keydown", iniciarJogo);
                 mostrarTelaInicial();
-    }
+                musica1.play();
+                musica2.pause();
+                musica2.currentTime = 0;
+            }
         });
         telaFinalAtiva = true;
-        setTimeout(() => telaFinal(sucesso), 950);
+        musica1.pause();
+        musica1.currentTime = 0;
+        setTimeout(() => { musica2.play(); telaEasterEgg(); }, 950);
         return true;
     }
+    //Lados
+    if(modulolunar.posicao.x < -100 || modulolunar.posicao.x > canvas.width + 100){
+    somMotor.pause();
+    somMotor.currentTime = 0;
+    document.removeEventListener("keydown", teclaPressionada);
+    document.removeEventListener("keyup", teclaSolta);
+    document.addEventListener("keydown", function reiniciar(evento){
+        if(evento.key == "Enter"){
+            document.removeEventListener("keydown", reiniciar);
+            telaFinalAtiva = false;
+            lançamento = (Math.round(Math.random()) == 0);
+            modulolunar.posicao.x = lançamento ? 100 : 700;
+            modulolunar.posicao.y = 160;
+            modulolunar.ângulo = lançamento ? -Math.PI/2 : Math.PI/2;
+            modulolunar.velocidade.x = lançamento ? 2 : -2;
+            modulolunar.velocidade.y = 0;
+            modulolunar.motorLigado = false;
+            modulolunar.combustível = 1000;
+            modulolunar.rotaçãoHorario = false;
+            modulolunar.rotaçãoAntihorario = false;
+            document.addEventListener("keydown", teclaPressionada);
+            document.addEventListener("keyup", teclaSolta);
+            desenhar();
+            musica1.play();
+            musica2.pause();
+            musica2.currentTime = 0;
+        } else if(evento.key == "Backspace"){
+            document.removeEventListener("keydown", reiniciar);
+            telaFinalAtiva = false;
+            lançamento = (Math.round(Math.random()) == 0);
+            modulolunar.posicao.x = lançamento ? 100 : 700;
+            modulolunar.posicao.y = 160;
+            modulolunar.ângulo = lançamento ? -Math.PI/2 : Math.PI/2;
+            modulolunar.velocidade.x = lançamento ? 2 : -2;
+            modulolunar.velocidade.y = 0;
+            modulolunar.motorLigado = false;
+            modulolunar.combustível = 1000;
+            modulolunar.rotaçãoHorario = false;
+            jogoIniciado = false;
+            document.addEventListener("keydown", iniciarJogo);
+            mostrarTelaInicial();
+            musica1.play();
+            musica2.pause();
+            musica2.currentTime = 0;
+        }
+    });
+    telaFinalAtiva = true;
+    musica1.pause();
+    musica1.currentTime = 0;
+    setTimeout(() => { musica2.play(); telaEasterEgg(); }, 950);
+    return true;
+    }
     return false;
+}
+function telaEasterEgg(){
+    if(!telaFinalAtiva) return;
+    desenharEstrelas();
+    if(telaEasterEgg){
+        mostrarResultado("Agora Você Está Navegando pelo Espaço!", "#ff9900")
+    }
+    contexto.font = "13px 'Press Start 2P'";
+    contexto.textAlign = "center";
+    contexto.textBaseline = "middle";
+    contexto.fillStyle = "#f3e0ff";
+    contexto.fillText(`Velocidade V: ${(modulolunar.velocidade.y * 10).toFixed(2)} m/s H: ${(modulolunar.velocidade.x * 10).toFixed(2)}) m/s}`,
+        canvas.width * 0.5, canvas.height * 0.5);
+    contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`, canvas.width * 0.5, canvas.height * 0.53);
+    contexto.fillText(`Combustível restante: ${(modulolunar.combustível * 0.1).toFixed(0)} %`, canvas.width * 0.5, canvas.height * 0.56);
+    if (Math.floor(Date.now() / 1500) % 2 === 0) {
+        contexto.font = "13px 'Press Start 2P'";
+        contexto.fillStyle = "white";
+        contexto.fillText("Pressione ENTER para Jogar Novamente", canvas.width * 0.5, canvas.height * 0.65);
+    }
+    if (Math.floor(Date.now() / 1500) % 2 === 1) {
+        contexto.font = "13px 'Press Start 2P'";
+        contexto.fillStyle = "white";
+        contexto.fillText("Pressione BACKSPACE para Voltar ao Início", canvas.width * 0.5, canvas.height * 0.65);
+    }
+    requestAnimationFrame(() => telaEasterEgg());
+}
+function telaFinal(sucesso){
+    if(!telaFinalAtiva) return;
+    desenharEstrelas();
+    if(sucesso){
+        mostrarResultado("A sua Alunissagem foi Feita com Sucesso!", "#0bd415");
+    } else {
+        mostrarResultado("Você Falhou ao Tentar Alunissar!", "red");
+    }
+    contexto.font = "13px 'Press Start 2P'";
+    contexto.textAlign = "center";
+    contexto.textBaseline = "middle";
+    contexto.fillStyle = "#f3e0ff"; 
+    contexto.fillText(`Velocidade V: ${(modulolunar.velocidade.y * 10).toFixed(2)} m/s H: ${(modulolunar.velocidade.x * 10).toFixed(2)}) m/s}`, 
+    canvas.width * 0.5, canvas.height * 0.5)
+    contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`, canvas.width * 0.5, canvas.height * 0.53);
+    contexto.fillText(`Combustível restante: ${(modulolunar.combustível * 0.1).toFixed(0)} %`, canvas.width * 0.5, canvas.height * 0.56);
+    if (Math.floor(Date.now() / 1500) % 2 === 0) {
+        contexto.font = "13px 'Press Start 2P'";
+        contexto.textAlign = "center";
+        contexto.textBaseline = "middle";
+        contexto.fillStyle = "white";
+        contexto.fillText("Pressione ENTER para Jogar Novamente", canvas.width * 0.5, canvas.height * 0.65);
+    }
+    if (Math.floor(Date.now() / 1500) % 2 === 1) {
+        contexto.font = "13px 'Press Start 2P'";
+        contexto.textAlign = "center";
+        contexto.textBaseline = "middle";
+        contexto.fillStyle = "white";
+        contexto.fillText("Pressione BACKSPACE para Voltar ao Início", canvas.width * 0.5, canvas.height * 0.65);
+    }
+    requestAnimationFrame(() => telaFinal(sucesso));
 }
 canvas.addEventListener("click", function(evento){
     if(!instruções) return;
@@ -424,7 +584,7 @@ canvas.addEventListener("click", function(evento){
        mouseY >= yBtn - 20 && mouseY <= yBtn + 20){
         instruções = false;
         jogoIniciado = true;
-        musica1.volume = 0.4;
+        musica1.volume = 0.2;
         setTimeout(() => {
             document.addEventListener("keydown", teclaPressionada);
             document.addEventListener("keyup", teclaSolta);
@@ -432,9 +592,5 @@ canvas.addEventListener("click", function(evento){
         }, 250);
     }
 });
-document.addEventListener("keydown", function primeiroToque(){
-    musica1.play();
-    document.removeEventListener("keydown", primeiroToque);
-}, { once: true });
 document.addEventListener("keydown", iniciarJogo);
 mostrarTelaInicial();
