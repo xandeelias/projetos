@@ -10,9 +10,9 @@ let canvas = document.querySelector("#jogo");
 let contexto = canvas.getContext("2d");
 // Foguetes
 let foguete = new Image();
-foguete.src = "sFoguete.png"
+foguete.src = "Image/sFoguete.png"
 let framesChama = [];
-let frameSrcs = ["sFogo1.png", "sFogo2.png", "sFogo3.png", "sFogo4.png"];
+let frameSrcs = ["Image/sFogo1.png", "Image/sFogo2.png", "Image/sFogo3.png", "Image/sFogo4.png"];
 frameSrcs.forEach((src, i) => {
     framesChama[i] = new Image();
     framesChama[i].src = src;
@@ -25,20 +25,20 @@ let jogoIniciado = false;
 let telaFinalAtiva = false;
 let instruções = false;
 //Músicas e Sons
-let musica1 = new Audio("MúsicaDeFundo.mp3");
+let musica1 = new Audio("Audio/MúsicaDeFundo.mp3");
 musica1.loop = true;
 musica1.volume = 0.6;
-let musica2 = new Audio("MúsicaDeResultado.mp3");
+let musica2 = new Audio("Audio/MúsicaDeResultado.mp3");
 musica2.loop = true;
 musica2.volume = 0.3;
-let somMotor = new Audio("somMotorFoguete.wav");
+let somMotor = new Audio("Audio/somMotorFoguete.wav");
 somMotor.loop = true;
 somMotor.volume = 1;
 // Coisas do Espaço
 let terra = new Image();
-terra.src = "sTerra.png"
+terra.src = "Image/sTerra.png"
 let lua = new Image();
-lua.src = "sLua.png"
+lua.src = "Image/sLua.png"
 const zonaLuaX1 = 200;
 const zonaLuaX2 = 750;
 //
@@ -129,9 +129,6 @@ function atraçãoGravitacional(){
     modulolunar.posicao.x += modulolunar.velocidade.x;
     modulolunar.posicao.y += modulolunar.velocidade.y;
     modulolunar.velocidade.y += gravidade;
-
-    if(Math.abs(modulolunar.velocidade.x) < 0.01) modulolunar.velocidade.x = 0;
-    if(Math.abs(modulolunar.velocidade.y) < 0.01) modulolunar.velocidade.y = 0;
 
     if(modulolunar.rotaçãoHorario){
         modulolunar.ângulo += Math.PI/180;
@@ -392,6 +389,7 @@ function encerrarJogo(){
                     document.addEventListener("keydown", iniciarJogo);
                     mostrarTelaInicial();
                     musica1.play();
+                    musica1.volume = 0.6;
                     musica2.pause();
                     musica2.currentTime = 0;
                 }
@@ -445,6 +443,7 @@ function encerrarJogo(){
                 document.addEventListener("keydown", iniciarJogo);
                 mostrarTelaInicial();
                 musica1.play();
+                musica1.volume = 0.6;
                 musica2.pause();
                 musica2.currentTime = 0;
             }
@@ -497,6 +496,7 @@ function encerrarJogo(){
             document.addEventListener("keydown", iniciarJogo);
             mostrarTelaInicial();
             musica1.play();
+            musica1.volume = 0.6;
             musica2.pause();
             musica2.currentTime = 0;
         }
@@ -584,7 +584,7 @@ canvas.addEventListener("click", function(evento){
        mouseY >= yBtn - 20 && mouseY <= yBtn + 20){
         instruções = false;
         jogoIniciado = true;
-        musica1.volume = 0.2;
+        musica1.volume = 0;
         setTimeout(() => {
             document.addEventListener("keydown", teclaPressionada);
             document.addEventListener("keyup", teclaSolta);
