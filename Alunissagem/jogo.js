@@ -27,7 +27,7 @@ let instruções = false;
 //Músicas e Sons
 let musica1 = new Audio("MúsicaDeFundo.mp3");
 musica1.loop = true;
-musica1.volume = 0.8;
+musica1.volume = 0.6;
 let musica2 = new Audio("MúsicaDeResultado.mp3");
 musica2.loop = true;
 musica2.volume = 0.3;
@@ -328,7 +328,7 @@ function mostrarTelaInicial(){
     if (Math.floor(Date.now() / 700) % 2 === 0) {
         contexto.font = "12px 'Press Start 2P'";
         contexto.textAlign = "middle"
-        contexto.fillStyle = "#f3e0ff";
+        contexto.fillStyle = "#faf1ff";
         contexto.fillText("Pressione ENTER para Iniciar o Jogo", canvas.width * 0.745, canvas.height * 0.6);
     }
     if(instruções){
@@ -518,7 +518,7 @@ function telaEasterEgg(){
     contexto.font = "13px 'Press Start 2P'";
     contexto.textAlign = "center";
     contexto.textBaseline = "middle";
-    contexto.fillStyle = "#f3e0ff";
+    contexto.fillStyle = "#faf1ff";
     contexto.fillText(`Velocidade V: ${(modulolunar.velocidade.y * 10).toFixed(2)} m/s H: ${(modulolunar.velocidade.x * 10).toFixed(2)}) m/s}`,
         canvas.width * 0.5, canvas.height * 0.5);
     contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`, canvas.width * 0.5, canvas.height * 0.53);
@@ -546,7 +546,7 @@ function telaFinal(sucesso){
     contexto.font = "13px 'Press Start 2P'";
     contexto.textAlign = "center";
     contexto.textBaseline = "middle";
-    contexto.fillStyle = "#f3e0ff"; 
+    contexto.fillStyle = "#faf1ff"; 
     contexto.fillText(`Velocidade V: ${(modulolunar.velocidade.y * 10).toFixed(2)} m/s H: ${(modulolunar.velocidade.x * 10).toFixed(2)}) m/s}`, 
     canvas.width * 0.5, canvas.height * 0.5)
     contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`, canvas.width * 0.5, canvas.height * 0.53);
