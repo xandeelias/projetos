@@ -5,9 +5,9 @@
 /** @type {HTMLCanvasElement} */
 
 document.body.style.fontFamily = "'Press Start 2P', monospace";
-// Gerais
+// Base do Jogo
 let canvas = document.querySelector("#jogo");
-let contexto = canvas.getContext("2d");
+let contexto = canvas.getContext("2d"); 
 // Foguetes
 let foguete = new Image();
 foguete.src = "Image/sFoguete.png"
@@ -20,7 +20,7 @@ frameSrcs.forEach((src, i) => {
 let frameAtual = 0;
 let contadorFrame = 0;
 const velocidadeAnimacao = 6;
-// Coisas do Jogo
+// Telas do Jogo
 let jogoIniciado = false;
 let telaFinalAtiva = false;
 let instruções = false;
@@ -41,7 +41,7 @@ let lua = new Image();
 lua.src = "Image/sLua.png"
 const zonaLuaX1 = 200;
 const zonaLuaX2 = 750;
-//
+// Funções do Jogo
 let lançamento = (Math.round(Math.random()) == 0);
 const gravidade = 0.01;
 let estrelas = [];
@@ -162,22 +162,6 @@ function teclaSolta(evento){
     } else if(evento.key == "ArrowLeft" || evento.key == "a"){
         modulolunar.rotaçãoAntihorario = false;
     }
-}
-function desenhar(){
-    atraçãoGravitacional();
-    desenharEstrelas();
-    desenharPlaneta();
-    desenharLua();
-    desenharModuloLunar();
-    mostrarCombustível();
-    mostrarVelocidade();
-    mostrarAltitude();
-    mostrarAngulo();
-
-    if(encerrarJogo()){
-        return;
-    }
-    requestAnimationFrame(desenhar);
 }
 function desenharModuloLunar(){
     contexto.save();
@@ -307,6 +291,22 @@ function desenharInstruções(){
     contexto.fillStyle = "red";
     contexto.fillText("X", xBtn, yBtn);
 }
+function desenhar(){
+    atraçãoGravitacional();
+    desenharEstrelas();
+    desenharPlaneta();
+    desenharLua();
+    desenharModuloLunar();
+    mostrarCombustível();
+    mostrarVelocidade();
+    mostrarAltitude();
+    mostrarAngulo();
+
+    if(encerrarJogo()){
+        return;
+    }
+    requestAnimationFrame(desenhar);
+}
 function mostrarTelaInicial(){
     desenharEstrelas();
     contexto.imageSmoothingEnabled = false;
@@ -338,7 +338,6 @@ function iniciarJogo(evento){
     if (evento.key == "Enter" && !jogoIniciado){
         document.removeEventListener("keydown", iniciarJogo);
         instruções = true;
-        musica1.play();
     }
 }
 function encerrarJogo(){
@@ -348,7 +347,7 @@ function encerrarJogo(){
         if(naLua){
             let sucesso = modulolunar.velocidade.y <= 0.5 && 
                 Math.abs(modulolunar.velocidade.x) <= 0.5 && 
-                Math.abs(modulolunar.ângulo) <= 5;
+                Math.abs(modulolunar.ângulo) * 180/Math.PI <= 5;
             somMotor.pause();
             somMotor.currentTime = 0;
             document.removeEventListener("keydown", teclaPressionada);
@@ -523,12 +522,11 @@ function telaEasterEgg(){
         canvas.width * 0.5, canvas.height * 0.5);
     contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`, canvas.width * 0.5, canvas.height * 0.53);
     contexto.fillText(`Combustível restante: ${(modulolunar.combustível * 0.1).toFixed(0)} %`, canvas.width * 0.5, canvas.height * 0.56);
-    if (Math.floor(Date.now() / 1500) % 2 === 0) {
+    if(Math.floor(Date.now() / 1500) % 2 === 0) {
         contexto.font = "13px 'Press Start 2P'";
         contexto.fillStyle = "white";
         contexto.fillText("Pressione ENTER para Jogar Novamente", canvas.width * 0.5, canvas.height * 0.65);
-    }
-    if (Math.floor(Date.now() / 1500) % 2 === 1) {
+    }else if(Math.floor(Date.now() / 1500) % 2 === 1) {
         contexto.font = "13px 'Press Start 2P'";
         contexto.fillStyle = "white";
         contexto.fillText("Pressione BACKSPACE para Voltar ao Início", canvas.width * 0.5, canvas.height * 0.65);
@@ -551,14 +549,13 @@ function telaFinal(sucesso){
     canvas.width * 0.5, canvas.height * 0.5)
     contexto.fillText(`Ângulo: ${(Math.abs(modulolunar.ângulo) * 180/Math.PI).toFixed(0)}°`, canvas.width * 0.5, canvas.height * 0.53);
     contexto.fillText(`Combustível restante: ${(modulolunar.combustível * 0.1).toFixed(0)} %`, canvas.width * 0.5, canvas.height * 0.56);
-    if (Math.floor(Date.now() / 1500) % 2 === 0) {
+    if(Math.floor(Date.now() / 1500) % 2 === 0) {
         contexto.font = "13px 'Press Start 2P'";
         contexto.textAlign = "center";
         contexto.textBaseline = "middle";
         contexto.fillStyle = "white";
         contexto.fillText("Pressione ENTER para Jogar Novamente", canvas.width * 0.5, canvas.height * 0.65);
-    }
-    if (Math.floor(Date.now() / 1500) % 2 === 1) {
+    } else if(Math.floor(Date.now() / 1500) % 2 === 1) {
         contexto.font = "13px 'Press Start 2P'";
         contexto.textAlign = "center";
         contexto.textBaseline = "middle";
@@ -593,4 +590,4 @@ canvas.addEventListener("click", function(evento){
     }
 });
 document.addEventListener("keydown", iniciarJogo);
-mostrarTelaInicial();
+mostrarTelaInicial(musica1.play());
